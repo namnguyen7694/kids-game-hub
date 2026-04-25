@@ -1,0 +1,33 @@
+.gameHeader {
+  background: white;
+  padding: 60px 0 20px;
+  text-align: center;
+}
+
+.description {
+  font-size: 1.25rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.tips {
+  padding-bottom: 80px;
+}
+
+.tipsContent {
+  background: #FFF9DB;
+  padding: 32px;
+  border-radius: var(--radius-md);
+  border: 2px dashed #FAB005;
+  text-align: center;
+}
+
+.tipsContent h3 {
+  color: #E67E22;
+  margin-bottom: 8px;
+}
+
+.tipsContent p {
+  color: #666;
+}
