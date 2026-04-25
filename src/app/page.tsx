@@ -12,12 +12,12 @@ const GAMES = [
     href: '/games/memory-match'
   },
   {
-    id: 'logic-puzzles',
-    title: 'Giải Mã Logic',
-    description: 'Thử thách tư duy với những câu đố logic hóc búa.',
-    icon: '🧠',
+    id: 'word-match',
+    title: 'Thẻ Từ Vựng',
+    description: 'Học từ vựng tiếng Anh qua hình ảnh sinh động và vui nhộn.',
+    icon: '🗂️',
     color: 'var(--blue)',
-    href: '#'
+    href: '/games/word-match'
   },
   {
     id: 'math-adventure',
