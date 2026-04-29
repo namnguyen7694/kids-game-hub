@@ -7,10 +7,18 @@ interface WordCardProps {
   emoji: string;
   en: string;
   vi: string;
+  phonetic?: string;
 }
 
-export default function WordCard({ emoji, en, vi }: WordCardProps) {
+export default function WordCard({ emoji, en, vi, phonetic }: WordCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+
+  const handlePronounce = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const utterance = new SpeechSynthesisUtterance(en);
+    utterance.lang = 'en-US';
+    window.speechSynthesis.speak(utterance);
+  };
 
   return (
     <div 
@@ -20,12 +28,20 @@ export default function WordCard({ emoji, en, vi }: WordCardProps) {
       <div className={styles.cardInner}>
         <div className={styles.cardFront}>
           <div className={styles.emoji}>{emoji}</div>
-          <div className={styles.hint}>Nhấn để xem từ vựng</div>
         </div>
         <div className={styles.cardBack}>
           <div className={styles.wordEn}>{en}</div>
+          {phonetic && <div className={styles.phonetic}>{phonetic}</div>}
           <div className={styles.wordVi}>{vi}</div>
-          <div className={styles.emoji} style={{ fontSize: '2rem', marginTop: '1rem' }}>{emoji}</div>
+          <button 
+            className={styles.pronounceBtn} 
+            onClick={handlePronounce}
+            aria-label="Phát âm"
+            title="Nghe phát âm"
+          >
+            🔊
+          </button>
+          <div className={styles.emoji} style={{ fontSize: '2rem', marginTop: '0.5rem' }}>{emoji}</div>
         </div>
       </div>
     </div>
