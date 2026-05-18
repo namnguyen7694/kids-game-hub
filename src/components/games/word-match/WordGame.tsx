@@ -5,7 +5,6 @@
 import { useState, useMemo, useEffect } from "react";
 import WordCard from "./WordCard";
 import QuizCard from "./QuizCard";
-import styles from "./WordGame.module.css";
 import Link from "next/link";
 import { VOCABULARY, CATEGORIES } from "../../../../constants";
 
@@ -26,7 +25,20 @@ export default function WordGame() {
 
   useEffect(() => {
     setIsClient(true);
+    return () => {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
   }, []);
+
+  useEffect(() => {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+  }, [mode]);
+
+
 
   const handleAnswer = (isCorrect: boolean) => {
     if (isPaused) return;
@@ -69,8 +81,6 @@ export default function WordGame() {
       const others = VOCABULARY.filter((v) => !selected.find((s) => s.en === v.en)).sort(() => 0.5 - Math.random());
       selected = [...selected, ...others].slice(0, questionCount);
     }
-
-    console.log("selected", selected);
 
     const questions = selected.map((vocab) => {
       const distractors = selected.filter((v) => v.en !== vocab.en);
@@ -119,28 +129,29 @@ export default function WordGame() {
   if (!isClient) return null;
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Thẻ Từ Vựng Thông Minh</h1>
+    <div className="flex flex-col items-center p-8 min-h-[80vh] gap-8">
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-center bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent mb-4">Thẻ Từ Vựng Thông Minh</h1>
 
-      <div className={styles.controls}>
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 mb-8 w-full max-w-[800px] justify-center px-4">
         {CATEGORIES.map((cat) => (
           <button
             key={cat.id}
-            className={`${styles.categoryBtn} ${activeCategory === cat.id ? styles.active : ""}`}
+            className={`flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border-2 font-bold cursor-pointer transition-all duration-300 shadow-sm hover:-translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed ${activeCategory === cat.id ? "bg-primary text-white border-primary shadow-md" : "bg-white text-[#666] border-transparent"}`}
             onClick={() => setActiveCategory(cat.id)}
             disabled={mode === "quiz" && quizStatus === "playing"}
           >
-            <span className={styles.categoryIcon}>{cat.icon}</span>
-            {cat.label}
+            <span className="text-xl">{cat.icon}</span>
+            <span className="text-sm sm:text-base">{cat.label}</span>
           </button>
         ))}
       </div>
 
+
       {mode === "learn" ? (
         <>
-          <div className={styles.modeToggle}>
+          <div className="flex justify-center gap-4 mb-6">
             <button
-              className={`${styles.modeBtn} ${styles.quizToggleBtn}`}
+              className="px-[1.5rem] py-[0.8rem] rounded-[20px] border-2 border-primary bg-white text-primary font-bold text-base cursor-pointer transition-all duration-300 shadow-sm hover:-translate-y-[2px] hover:shadow-md"
               onClick={() => {
                 setMode("quiz");
                 setQuizStatus("setup");
@@ -150,23 +161,24 @@ export default function WordGame() {
             </button>
           </div>
 
-          <div className={styles.grid}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-8 w-full max-w-[1200px] px-4">
             {learnData.map((vocab, index) => (
               <WordCard key={`${vocab.en}-${index}`} vocab={vocab} />
             ))}
           </div>
+
         </>
       ) : (
-        <div className={styles.quizContainer}>
+        <div className="w-full max-w-[600px] bg-white p-8 rounded-[30px] shadow-[0_20px_40px_rgba(0,0,0,0.05)] min-h-[500px] flex flex-col md:p-6 md:min-h-[450px]">
           {quizStatus === "setup" && (
-            <div className={styles.setupScreen}>
-              <h2>Sẵn sàng chưa nào?</h2>
+            <div className="text-center flex flex-col gap-6 flex-1 justify-center">
+              <h2 className="text-[2rem] text-primary">Sẵn sàng chưa nào?</h2>
               <p>Chọn số lượng câu hỏi bạn muốn thử sức:</p>
-              <div className={styles.countOptions}>
+              <div className="flex justify-center gap-4 flex-wrap">
                 {countOptions.map((count) => (
                   <button
                     key={count}
-                    className={`${styles.countBtn} ${questionCount === count ? styles.active : ""}`}
+                    className={`p-[1rem_1.5rem] border-2 rounded-[15px] font-bold cursor-pointer transition-all duration-200 ${questionCount === count ? "border-primary bg-primary text-white" : "border-[#eee] bg-white"}`}
                     onClick={() => setQuestionCount(count)}
                   >
                     {count === totalInCategory ? `Tất cả (${count})` : `${count} câu`}
@@ -176,11 +188,11 @@ export default function WordGame() {
               <p>
                 Chủ đề: <strong>{CATEGORIES.find((c) => c.id === activeCategory)?.label}</strong>
               </p>
-              <div className={styles.setupActions}>
-                <button className={styles.startBtn} onClick={startQuiz}>
+              <div className="flex flex-col gap-4 mt-8">
+                <button className="p-[1.2rem] rounded-[20px] border-none bg-primary text-white text-[1.2rem] font-extrabold cursor-pointer shadow-[0_10px_20px_rgba(255,107,107,0.3)] transition-transform duration-200 hover:scale-[1.02]" onClick={startQuiz}>
                   Bắt đầu ngay 🚀
                 </button>
-                <button className={styles.cancelBtn} onClick={() => setMode("learn")}>
+                <button className="p-4 border-none bg-none text-[#888] font-semibold cursor-pointer" onClick={() => setMode("learn")}>
                   Quay lại
                 </button>
               </div>
@@ -188,26 +200,26 @@ export default function WordGame() {
           )}
 
           {quizStatus === "playing" && (
-            <div className={styles.playingScreen}>
-              <div className={styles.quizHeader}>
-                <div className={styles.progressInfo}>
-                  <span>
+            <div className="flex flex-col gap-8 flex-1">
+              <div className="flex justify-between items-center gap-6">
+                <div className="flex-1">
+                  <span className="text-[0.9rem] font-bold text-[#666] mb-2 block">
                     Câu hỏi {currentIndex + 1} / {questionCount}
                   </span>
-                  <div className={styles.progressBar}>
+                  <div className="h-[10px] bg-[#eee] rounded-[5px] overflow-hidden">
                     <div
-                      className={styles.progressFill}
+                      className="h-full bg-primary transition-all duration-300"
                       style={{ width: `${((currentIndex + 1) / questionCount) * 100}%` }}
                     ></div>
                   </div>
                 </div>
-                <div className={`${styles.timer} ${timeLeft <= 5 ? styles.urgent : ""}`}>⏱️ {timeLeft}s</div>
-                <button className={styles.finishEarlyBtn} onClick={() => setQuizStatus("finished")}>
+                <div className={`text-2xl font-extrabold text-[#333] bg-[#f8f9fa] p-[0.5rem_1rem] rounded-[15px] min-w-[80px] text-center ${timeLeft <= 5 ? "text-[#f44336] animate-pulse" : ""}`}>⏱️ {timeLeft}s</div>
+                <button className="p-[0.5rem_1rem] border border-[#ddd] rounded-[12px] bg-white text-[#888] text-[0.8rem] font-semibold cursor-pointer transition-all duration-200 hover:bg-[#fff5f5] hover:text-[#f44336] hover:border-[#f44336]" onClick={() => setQuizStatus("finished")}>
                   Kết thúc sớm
                 </button>
               </div>
 
-              <div className={styles.singleCardWrapper}>
+              <div className="flex-1 flex items-center justify-center">
                 <QuizCard
                   key={`quiz-${currentIndex}`}
                   emoji={quizQuestions[currentIndex].emoji}
@@ -223,12 +235,12 @@ export default function WordGame() {
           )}
 
           {quizStatus === "finished" && (
-            <div className={styles.summaryScreen}>
-              <div className={styles.summaryIcon}>{score / questionCount >= 0.8 ? "🏆" : "👏"}</div>
-              <h2>Hoàn thành xuất sắc!</h2>
-              <div className={styles.finalScore}>
-                <span className={styles.scoreNum}>{score}</span>
-                <span className={styles.scoreTotal}>/ {questionCount}</span>
+            <div className="text-center flex-1 flex flex-col items-center">
+              <div className="text-[5rem] mb-4">{score / questionCount >= 0.8 ? "🏆" : "👏"}</div>
+              <h2 className="text-2xl font-bold">Hoàn thành xuất sắc!</h2>
+              <div className="my-6 mx-0">
+                <span className="text-[4rem] font-black text-primary">{score}</span>
+                <span className="text-[1.5rem] text-[#888] font-bold">/ {questionCount}</span>
               </div>
               <p>
                 {score === questionCount
@@ -236,13 +248,13 @@ export default function WordGame() {
                   : "Cố gắng lên nhé, bạn đang làm rất tốt!"}
               </p>
 
-              <div className={styles.resultsList}>
-                <h3>Xem lại các câu trả lời:</h3>
-                <div className={styles.resultsGrid}>
+              <div className="w-full my-8 mx-0 max-h-[300px] overflow-y-auto pr-2">
+                <h3 className="font-bold mb-4">Xem lại các câu trả lời:</h3>
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-2">
                   {quizResults.map((res, i) => (
                     <div
                       key={i}
-                      className={`${styles.resultItem} ${res.isCorrect ? styles.resCorrect : styles.resWrong}`}
+                      className={`p-2 rounded-[10px] bg-[#f8f9fa] flex items-center justify-center gap-1 text-[0.9rem] border ${res.isCorrect ? "border-[#4caf50]" : "border-[#f44336]"}`}
                     >
                       <span>{res.emoji}</span>
                       <span>{res.en}</span>
@@ -252,11 +264,11 @@ export default function WordGame() {
                 </div>
               </div>
 
-              <div className={styles.summaryActions}>
-                <button className={styles.startBtn} onClick={startQuiz}>
+              <div className="w-full flex flex-col gap-2">
+                <button className="p-[1.2rem] rounded-[20px] border-none bg-primary text-white text-[1.2rem] font-extrabold cursor-pointer shadow-[0_10px_20px_rgba(255,107,107,0.3)] transition-transform duration-200 hover:scale-[1.02]" onClick={startQuiz}>
                   Chơi lại 🔄
                 </button>
-                <button className={styles.cancelBtn} onClick={resetGame}>
+                <button className="p-4 border-none bg-none text-[#888] font-semibold cursor-pointer" onClick={resetGame}>
                   Kết thúc
                 </button>
               </div>
@@ -265,11 +277,13 @@ export default function WordGame() {
         </div>
       )}
 
-      <div className={styles.footer}>
+      <div className="mt-12 text-center">
         <Link href="/">
-          <button className={styles.backBtn}>← Quay lại trang chủ</button>
+          <button className="p-[1rem_2rem] bg-[#f0f0f0] border-none rounded-[12px] font-semibold cursor-pointer transition-all duration-200 hover:bg-[#e0e0e0]">← Quay lại trang chủ</button>
         </Link>
       </div>
     </div>
   );
 }
+
+

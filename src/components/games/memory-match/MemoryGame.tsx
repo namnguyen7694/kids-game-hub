@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import MemoryCard from './MemoryCard';
-import styles from './MemoryGame.module.css';
+
 
 const ALL_EMOJIS = [
   '🦁', '🐯', '🦒', '🦓', '🐘', '🦏', '🦛', '🐄', '🐎', '🐖', 
@@ -166,37 +166,46 @@ export default function MemoryGame() {
   }
 
   return (
-    <div className={styles.gameContainer}>
-      <div className={styles.gameHeader}>
-        <div className={styles.difficultyBadge}>{difficulty.label}</div>
-        <div className={styles.scoreBoard}>
+    <div className="flex flex-col items-center p-4 sm:p-8 max-w-[1200px] mx-auto min-h-screen animate-fadeIn">
+      <div className="w-full flex flex-col items-center gap-4 mb-6 sm:mb-10 min-h-[200px] sm:min-h-[250px]">
+        <div className="flex justify-between items-center w-full max-w-[600px] mb-2">
+          <div className="bg-accent text-[#856404] px-4 py-1.5 sm:px-5 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-sm">{difficulty.label}</div>
+          <button onClick={() => setGameState('setup')} className="bg-[#EEE] text-[#666] px-4 py-1.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 hover:bg-[#E0E0E0] hover:text-primary">Thoát</button>
+        </div>
+        
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-4 w-full">
           {players.map((player, idx) => (
             <div 
               key={idx} 
-              className={`${styles.playerScore} ${idx === currentPlayerIndex ? styles.activePlayer : ''}`}
+              className={`bg-white px-4 py-2 sm:px-6 sm:py-3 rounded-2xl shadow-sm flex flex-col items-center min-w-[100px] sm:min-w-[140px] transition-all duration-300 border-2 relative ${idx === currentPlayerIndex ? "border-primary scale-105 shadow-md" : "border-transparent opacity-70"}`}
             >
-              <span className={styles.playerName}>{player.name}</span>
-              <span className={styles.scoreValue}>{player.score}</span>
+              <span className="text-[0.75rem] sm:text-[0.85rem] text-[#666] font-bold">{player.name}</span>
+              <span className="text-xl sm:text-2xl font-black text-foreground">{player.score}</span>
               {idx === currentPlayerIndex && showMatchCelebration && (
-                <div className={styles.matchBadge}>TUYỆT VỜI! ✨</div>
+                <div className="absolute -top-4 bg-secondary text-white px-3 py-1 rounded-full text-[0.65rem] sm:text-[0.75rem] font-black animate-matchPop shadow-md whitespace-nowrap z-10">TUYỆT VỜI! ✨</div>
               )}
             </div>
           ))}
         </div>
 
-        <div className={styles.timerContainer}>
-          {isTimerRunning && (
-            <div className={`${styles.timer} ${timeLeft <= WARNING_THRESHOLD_SECONDS ? styles.timerWarning : ''}`}>
-              ⏱️ {timeLeft}s - Lượt của <strong>{players[currentPlayerIndex].name}</strong>
-            </div>
-          )}
+        <div className="h-14 flex items-center justify-center w-full mt-2">
+          <div className={`text-xs sm:text-base font-black text-blue bg-white px-6 py-2.5 rounded-full shadow-lg flex items-center gap-3 border-2 border-blue/5 transition-all duration-500 transform ${isTimerRunning ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"} ${timeLeft <= WARNING_THRESHOLD_SECONDS && isTimerRunning ? "text-primary bg-[#FFF0F0] animate-pulse border-primary/20" : ""}`}>
+            <span className="text-xl">⏱️</span>
+            <span className="min-w-[3ch]">{timeLeft}s</span>
+            <span className="w-px h-4 bg-gray-200 mx-1"></span>
+            <span>Lượt: <span className="text-primary">{players[currentPlayerIndex].name}</span></span>
+          </div>
         </div>
-        <button onClick={() => setGameState('setup')} className={styles.quitBtn}>Thoát</button>
       </div>
 
+
+
       <div 
-        className={styles.cardGrid} 
-        style={{ gridTemplateColumns: `repeat(${difficulty.size}, 1fr)` }}
+        className="grid w-full max-w-[600px] aspect-square mx-auto [perspective:1000px] px-2" 
+        style={{ 
+          gridTemplateColumns: `repeat(${difficulty.size}, 1fr)`,
+          gap: difficulty.size > 8 ? '4px' : difficulty.size > 6 ? '6px' : '8px',
+        } as React.CSSProperties}
       >
         {cards.map(card => (
           <MemoryCard 
@@ -211,19 +220,25 @@ export default function MemoryGame() {
         ))}
       </div>
 
+
       {gameState === 'finished' && (
-        <div className={styles.winModal}>
-          <div className={styles.winContent}>
-            <h2>🎉 Trò chơi kết thúc! 🎉</h2>
-            <div className={styles.finalScores}>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000] backdrop-blur-[8px]">
+          <div className="bg-white p-12 rounded-lg text-center max-w-[400px] w-[90%]">
+            <h2 className="text-2xl font-bold mb-4">🎉 Trò chơi kết thúc! 🎉</h2>
+            <div className="my-6 mx-0 mb-10 flex flex-col gap-3">
               {players.sort((a, b) => b.score - a.score).map((p, i) => (
-                <div key={i} className={styles.finalScoreRow}>
+                <div key={i} className="flex justify-between p-[12px_16px] bg-[#F8F9FA] rounded-md font-bold">
                   <span>{i === 0 ? '🏆' : ''} {p.name}</span>
                   <span>{p.score} điểm</span>
                 </div>
               ))}
             </div>
-            <button onClick={() => setGameState('setup')}>Chơi Lại!</button>
+            <button 
+              className="bg-primary text-white p-[16px_40px] rounded-full font-extrabold w-full"
+              onClick={() => setGameState('setup')}
+            >
+              Chơi Lại!
+            </button>
           </div>
         </div>
       )}
@@ -254,37 +269,37 @@ function SetupScreen({ onStart }: { onStart: (d: Difficulty, p: string[]) => voi
   };
 
   return (
-    <div className={styles.setupScreen}>
-      <h2 className={styles.setupTitle}>Cài đặt trò chơi</h2>
+    <div className="bg-white p-6 sm:p-10 rounded-3xl shadow-xl max-w-[500px] mx-auto my-6 sm:my-10 flex flex-col gap-6 sm:gap-8 w-[95%] sm:w-full">
+      <h2 className="text-center text-2xl sm:text-3xl text-primary font-black">Cài đặt trò chơi</h2>
       
-      <div className={styles.setupSection}>
-        <h3>👥 Người chơi</h3>
+      <div className="flex flex-col gap-4">
+        <h3 className="text-base sm:text-lg font-bold flex items-center gap-2">👥 Người chơi</h3>
         {playerNames.map((name, i) => (
-          <div key={i} className={styles.playerInputRow}>
+          <div key={i} className="flex gap-2">
             <input 
               type="text" 
               value={name} 
               onChange={(e) => updateName(i, e.target.value)}
-              className={styles.setupInput}
+              className="flex-1 px-4 py-2 sm:py-3 border-2 border-[#EEE] rounded-2xl text-sm sm:text-base outline-none transition-colors duration-200 focus:border-primary"
             />
             {playerNames.length > 1 && (
-              <button onClick={() => removePlayer(i)} className={styles.removeBtn}>✕</button>
+              <button onClick={() => removePlayer(i)} className="text-[#CCC] text-xl px-2 hover:text-primary transition-colors">✕</button>
             )}
           </div>
         ))}
         {playerNames.length < 4 && (
-          <button onClick={addPlayer} className={styles.addPlayerBtn}>+ Thêm người chơi</button>
+          <button onClick={addPlayer} className="text-blue font-bold text-sm text-left hover:underline">+ Thêm người chơi</button>
         )}
       </div>
 
-      <div className={styles.setupSection}>
-        <h3>⭐ Cấp độ</h3>
-        <div className={styles.difficultyGrid}>
+      <div className="flex flex-col gap-4">
+        <h3 className="text-base sm:text-lg font-bold flex items-center gap-2">⭐ Cấp độ</h3>
+        <div className="grid grid-cols-2 gap-3">
           {Object.entries(DIFFICULTIES).map(([key, diff]) => (
             <button
               key={key}
               onClick={() => setSelectedDiff(key)}
-              className={`${styles.diffBtn} ${selectedDiff === key ? styles.diffActive : ''}`}
+              className={`p-3 border-2 border-[#EEE] rounded-2xl font-bold text-sm sm:text-base transition-all duration-300 ${selectedDiff === key ? "bg-secondary border-secondary text-white shadow-md -translate-y-1" : "bg-white text-[#666] hover:border-secondary/30"}`}
             >
               {diff.label}
             </button>
@@ -294,10 +309,11 @@ function SetupScreen({ onStart }: { onStart: (d: Difficulty, p: string[]) => voi
 
       <button 
         onClick={() => onStart(DIFFICULTIES[selectedDiff], playerNames)}
-        className={styles.startBtn}
+        className="bg-primary text-white py-4 rounded-full text-lg sm:text-xl font-black shadow-[0_8px_16px_rgba(255,107,107,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_20px_rgba(255,107,107,0.4)] active:translate-y-0 mt-2"
       >
         Bắt đầu thôi! 🚀
       </button>
     </div>
+
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { memo } from "react";
-import styles from "./MemoryGame.module.css";
 import { Card } from "./MemoryGame";
+
 
 interface CardProps {
   card: Card;
@@ -12,31 +12,28 @@ interface CardProps {
   disabled: boolean;
   size: number;
 }
-
 function MemoryCard({ card, handleChoice, flipped, isMatched, disabled, size }: CardProps) {
-  const cardScale = size > 6 ? 0.9 : size > 4 ? 0.95 : 1;
-  const fontSize = size > 8 ? "2rem" : size > 6 ? "3rem" : "4rem";
+  const fontSize = size > 8 ? "1.5rem" : size > 6 ? "2.5rem" : "4rem";
 
   return (
     <div
-      className={`${styles.card} ${isMatched ? styles.matchedOut : ""}`}
+      className={`relative cursor-pointer transition-all duration-500 ${isMatched ? "pointer-events-none animate-matchedShrink opacity-0 invisible" : "opacity-100 visible"}`}
       style={{
-        transform: `scale(${cardScale})`,
         width: "100%",
-        aspectRatio: "3/4",
-        visibility: isMatched ? "hidden" : "visible",
-        opacity: isMatched ? 0 : 1,
-        transition: "opacity 0.5s ease, visibility 0.5s",
+        height: "100%",
       }}
     >
-      <div className={`${styles.inner} ${flipped ? styles.flipped : ""}`}>
-        <div className={styles.front} onClick={() => !disabled && handleChoice(card)}>
-          <span className={styles.backPattern} style={{ fontSize }}>
+      <div className={`relative w-full h-full transition-transform duration-600 ease-[cubic-bezier(0.4,0,0.2,1)] [transform-style:preserve-3d] ${flipped ? "[transform:rotateY(180deg)]" : ""}`}>
+        <div 
+          className="absolute w-full h-full [backface-visibility:hidden] rounded-md flex items-center justify-center shadow-sm border-2 border-white bg-primary text-white" 
+          onClick={() => !disabled && handleChoice(card)}
+        >
+          <span className="opacity-80" style={{ fontSize }}>
             ❓
           </span>
         </div>
-        <div className={styles.back}>
-          <span className={styles.icon} style={{ fontSize }}>
+        <div className="absolute w-full h-full [backface-visibility:hidden] rounded-md flex items-center justify-center shadow-sm border-2 border-white bg-white [transform:rotateY(180deg)]">
+          <span className="animate-pop" style={{ fontSize }}>
             {card.content}
           </span>
         </div>
@@ -44,5 +41,6 @@ function MemoryCard({ card, handleChoice, flipped, isMatched, disabled, size }: 
     </div>
   );
 }
+
 
 export default memo(MemoryCard);
