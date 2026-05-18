@@ -38,8 +38,6 @@ export default function WordGame() {
     }
   }, [mode]);
 
-
-
   const handleAnswer = (isCorrect: boolean) => {
     if (isPaused) return;
     setIsPaused(true);
@@ -130,7 +128,9 @@ export default function WordGame() {
 
   return (
     <div className="flex flex-col items-center p-8 min-h-[80vh] gap-8">
-      <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-center bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent mb-4">Thẻ Từ Vựng Thông Minh</h1>
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-center bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent mb-4">
+        Thẻ Từ Vựng Thông Minh
+      </h1>
 
       <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 mb-8 w-full max-w-[800px] justify-center px-4">
         {CATEGORIES.map((cat) => (
@@ -145,7 +145,6 @@ export default function WordGame() {
           </button>
         ))}
       </div>
-
 
       {mode === "learn" ? (
         <>
@@ -166,7 +165,6 @@ export default function WordGame() {
               <WordCard key={`${vocab.en}-${index}`} vocab={vocab} />
             ))}
           </div>
-
         </>
       ) : (
         <div className="w-full max-w-[600px] bg-white p-8 rounded-[30px] shadow-[0_20px_40px_rgba(0,0,0,0.05)] min-h-[500px] flex flex-col md:p-6 md:min-h-[450px]">
@@ -189,10 +187,16 @@ export default function WordGame() {
                 Chủ đề: <strong>{CATEGORIES.find((c) => c.id === activeCategory)?.label}</strong>
               </p>
               <div className="flex flex-col gap-4 mt-8">
-                <button className="p-[1.2rem] rounded-[20px] border-none bg-primary text-white text-[1.2rem] font-extrabold cursor-pointer shadow-[0_10px_20px_rgba(255,107,107,0.3)] transition-transform duration-200 hover:scale-[1.02]" onClick={startQuiz}>
+                <button
+                  className="p-[1.2rem] rounded-[20px] border-none bg-primary text-white text-[1.2rem] font-extrabold cursor-pointer shadow-[0_10px_20px_rgba(255,107,107,0.3)] transition-transform duration-200 hover:scale-[1.02]"
+                  onClick={startQuiz}
+                >
                   Bắt đầu ngay 🚀
                 </button>
-                <button className="p-4 border-none bg-none text-[#888] font-semibold cursor-pointer" onClick={() => setMode("learn")}>
+                <button
+                  className="p-4 border-none bg-none text-[#888] font-semibold cursor-pointer"
+                  onClick={() => setMode("learn")}
+                >
                   Quay lại
                 </button>
               </div>
@@ -213,8 +217,15 @@ export default function WordGame() {
                     ></div>
                   </div>
                 </div>
-                <div className={`text-2xl font-extrabold text-[#333] bg-[#f8f9fa] p-[0.5rem_1rem] rounded-[15px] min-w-[80px] text-center ${timeLeft <= 5 ? "text-[#f44336] animate-pulse" : ""}`}>⏱️ {timeLeft}s</div>
-                <button className="p-[0.5rem_1rem] border border-[#ddd] rounded-[12px] bg-white text-[#888] text-[0.8rem] font-semibold cursor-pointer transition-all duration-200 hover:bg-[#fff5f5] hover:text-[#f44336] hover:border-[#f44336]" onClick={() => setQuizStatus("finished")}>
+                <div
+                  className={`text-2xl font-extrabold text-[#333] bg-[#f8f9fa] p-[0.5rem_1rem] rounded-[15px] min-w-[80px] text-center ${timeLeft <= 5 ? "text-[#f44336] animate-pulse" : ""}`}
+                >
+                  ⏱️ {timeLeft}s
+                </div>
+                <button
+                  className="p-[0.5rem_1rem] border border-[#ddd] rounded-[12px] bg-white text-[#888] text-[0.8rem] font-semibold cursor-pointer transition-all duration-200 hover:bg-[#fff5f5] hover:text-[#f44336] hover:border-[#f44336]"
+                  onClick={() => setQuizStatus("finished")}
+                >
                   Kết thúc sớm
                 </button>
               </div>
@@ -265,10 +276,16 @@ export default function WordGame() {
               </div>
 
               <div className="w-full flex flex-col gap-2">
-                <button className="p-[1.2rem] rounded-[20px] border-none bg-primary text-white text-[1.2rem] font-extrabold cursor-pointer shadow-[0_10px_20px_rgba(255,107,107,0.3)] transition-transform duration-200 hover:scale-[1.02]" onClick={startQuiz}>
+                <button
+                  className="p-[1.2rem] rounded-[20px] border-none bg-primary text-white text-[1.2rem] font-extrabold cursor-pointer shadow-[0_10px_20px_rgba(255,107,107,0.3)] transition-transform duration-200 hover:scale-[1.02]"
+                  onClick={startQuiz}
+                >
                   Chơi lại 🔄
                 </button>
-                <button className="p-4 border-none bg-none text-[#888] font-semibold cursor-pointer" onClick={resetGame}>
+                <button
+                  className="p-4 border-none bg-none text-[#888] font-semibold cursor-pointer"
+                  onClick={resetGame}
+                >
                   Kết thúc
                 </button>
               </div>
@@ -279,11 +296,11 @@ export default function WordGame() {
 
       <div className="mt-12 text-center">
         <Link href="/">
-          <button className="p-[1rem_2rem] bg-[#f0f0f0] border-none rounded-[12px] font-semibold cursor-pointer transition-all duration-200 hover:bg-[#e0e0e0]">← Quay lại trang chủ</button>
+          <button className="p-[1rem_2rem] bg-[#f0f0f0] border-none rounded-[12px] font-semibold cursor-pointer transition-all duration-200 hover:bg-[#e0e0e0]">
+            ← Quay lại trang chủ
+          </button>
         </Link>
       </div>
     </div>
   );
 }
-
-
